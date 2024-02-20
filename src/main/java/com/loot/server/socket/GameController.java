@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -52,11 +53,28 @@ public class GameController {
             messagingTemplate.convertAndSend("/topic/gameStatus/" + roomKey,
                     GameStatus.builder().message("Player joined: " + playerId).build());
         } else {
-            messagingTemplate.convertAndSendToUser(playerId, "/topic/error", "Game session not found: " + roomKey);
+            messagingTemplate.convertAndSend("/topic/error", "Game session not found: " + roomKey);
         }
 
         // Debugging purposes
         printTheCurrentRoomData();
+    }
+
+    @MessageMapping("/ready")
+    public void startGame(JoinGameRequest request) throws Exception {
+        String roomKey = request.getRoomKey();
+        Set<String> players = gameSessions.get(roomKey);
+        if(players != null){
+            String json = mapper.writeValueAsString(
+                    GameStatus.builder()
+                    .message("Player - " + request.getPlayerId() + " is ready to begin!")
+                    .build()
+            );
+            System.out.println("Sending the message");
+            messagingTemplate.convertAndSend("/topic/gameStatus/" + roomKey, json);
+        } else {
+            System.out.println("No players! Room key = " + request.getRoomKey());
+        }
     }
 
     private void printTheCurrentRoomData() {

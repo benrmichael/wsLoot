@@ -1,3 +1,6 @@
+let initPlayerId;
+let initRoomKey;
+
 const stompClient = new StompJs.Client({
     brokerURL: 'ws://localhost:8080/game-websocket'
 });
@@ -48,6 +51,9 @@ function connect(roomKey, playerId) {
             destination: "/app/createGame",
             body: JSON.stringify({ playerId: playerId, roomKey: roomKey })
         });
+
+        this.initPlayerId = playerId;
+        this.initRoomKey = roomKey;
     };
 }
 
@@ -84,6 +90,17 @@ function joinGame(playerId, roomKey) {
             body: JSON.stringify({ playerId: playerId, roomKey: roomKey })
         });
     };
+
+    this.initPlayerId = playerId;
+    this.initRoomKey = roomKey;
+}
+
+function readyUp(){
+    console.log("Ready button has been pressed")
+    stompClient.publish({
+        destination : "/app/ready",
+        body: JSON.stringify({ playerId: initPlayerId, roomKey: initRoomKey })
+    });
 }
 
 function showGameStatus(message) {
@@ -99,6 +116,7 @@ $(function () {
             createGame(playerId)
         }
     });
+    $( "#ready" ).click(() => readyUp());
     $( "#joinGame" ).click(() => {
         let playerId = prompt("Enter your username: ");
         let sessionId = prompt("Enter game session ID:");
