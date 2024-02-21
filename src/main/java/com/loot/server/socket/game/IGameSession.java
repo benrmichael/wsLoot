@@ -10,4 +10,8 @@ public interface IGameSession {
     void dealInitialCards();
 
     BaseCard dealCard(Player player);
+
+    Boolean readyPlayerUp(Player player);
+
+    void addPlayer(Player player);
 }

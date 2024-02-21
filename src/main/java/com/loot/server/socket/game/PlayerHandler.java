@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@NoArgsConstructor
 @AllArgsConstructor
 public class PlayerHandler implements IPlayerHandler {
 
@@ -24,6 +23,12 @@ public class PlayerHandler implements IPlayerHandler {
 
     private int numberOfPlayersForGame = 4;
     private int numberOfWinsNeeded = 3;
+
+    public PlayerHandler() {
+        playersInRoom = new ArrayList<>();
+        playersInRound = new ArrayList<>();
+        readyPlayers = new ArrayList<>();
+    }
 
     @Override
     public void addPlayer(Player player) {
