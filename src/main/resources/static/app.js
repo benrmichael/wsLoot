@@ -52,8 +52,8 @@ function connect(roomKey, playerId) {
             body: JSON.stringify({ playerId: playerId, roomKey: roomKey })
         });
 
-        this.initPlayerId = playerId;
-        this.initRoomKey = roomKey;
+        initPlayerId = playerId;
+        initRoomKey = roomKey;
     };
 }
 
@@ -91,8 +91,8 @@ function joinGame(playerId, roomKey) {
         });
     };
 
-    this.initPlayerId = playerId;
-    this.initRoomKey = roomKey;
+    initPlayerId = playerId;
+    initRoomKey = roomKey;
 }
 
 function readyUp(){
