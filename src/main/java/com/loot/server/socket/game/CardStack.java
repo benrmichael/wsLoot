@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
-public class CardStack {
+public class CardStack implements ICardStack {
 
     // Stores all the possible cards
     private final List<BaseCard> cardPool = List.of(
@@ -34,10 +34,11 @@ public class CardStack {
     private Stack<BaseCard> drawPile;
 
     public CardStack(){
-        shuffleCards();
+        shuffle();
     }
 
-    private void shuffleCards() {
+    @Override
+    public void shuffle() {
         Random rand = new Random();
         List<BaseCard> cardPoolCopy = new ArrayList<>(cardPool);
 
@@ -57,9 +58,21 @@ public class CardStack {
         for(BaseCard card : cardPoolCopy) {
             drawPile.push(card);
         }
+
+        System.out.println(drawPile);
     }
 
     public static void main(String[] args) {
         CardStack stack = new CardStack();
+    }
+
+    @Override
+    public BaseCard drawCard() {
+        return drawPile.pop();
+    }
+
+    @Override
+    public Boolean isDeckEmpty() {
+        return drawPile.isEmpty();
     }
 }
