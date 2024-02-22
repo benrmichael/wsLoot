@@ -37,7 +37,8 @@ public class GameController {
         String roomKey = request.getRoomKey();
         gameSessions.put(roomKey, new GameSession());
 
-        String body = mapper.writeValueAsString(GameStatus.builder().message("Game created: " + roomKey).build());
+        //String body = mapper.writeValueAsString(GameStatus.builder().message("Game created: " + roomKey).build());
+        GameStatus body = GameStatus.builder().message("Game created: " + roomKey).build();
         messagingTemplate.convertAndSend("/topic/gameStatus/" + roomKey, body);
         joinGame(JoinGameRequest.builder().playerId(request.getPlayerId()).roomKey(roomKey).build());
 
