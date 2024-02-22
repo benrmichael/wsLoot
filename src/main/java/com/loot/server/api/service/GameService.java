@@ -1,6 +1,6 @@
 package com.loot.server.api.service;
 
-import com.loot.server.api.domain.GameCreationDto;
+import com.loot.server.domain.GameCreationDto;
 
 public interface GameService {
     

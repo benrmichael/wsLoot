@@ -1,14 +1,10 @@
-package com.loot.server.socket;
+package com.loot.server.socket.controllers;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.loot.server.socket.domain.Player;
-import com.loot.server.socket.game.GameSession;
+import com.loot.server.socket.logic.GameSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -16,9 +12,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loot.server.socket.domain.CreateGameRequest;
+import com.loot.server.socket.domain.GameRequestDto;
 import com.loot.server.socket.domain.GameStatus;
-import com.loot.server.socket.domain.JoinGameRequest;
 
 @Controller
 @ComponentScan
@@ -33,42 +28,48 @@ public class GameController {
     private final Map<String, GameSession> gameSessions = new HashMap<>();
 
     @MessageMapping("/createGame")
-    public void createGame(CreateGameRequest request) throws Exception {
+    public void createGame(GameRequestDto request) throws Exception {
+        System.out.println(request);
+
         String roomKey = request.getRoomKey();
-        gameSessions.put(roomKey, new GameSession());
+
+        gameSessions.put(roomKey, new GameSession(roomKey));
+        GameSession gameSession = gameSessions.get(roomKey);
+        gameSession.addPlayer(request.getPlayerDto());
 
         String body = mapper.writeValueAsString(GameStatus.builder().message("Game created: " + roomKey).build());
         messagingTemplate.convertAndSend("/topic/gameStatus/" + roomKey, body);
-        joinGame(JoinGameRequest.builder().playerId(request.getPlayerId()).roomKey(roomKey).build());
 
-        // Debugging purposes
-        printTheCurrentRoomData();
+        printDebug();
     }
 
     @MessageMapping("/joinGame")
-    public void joinGame(JoinGameRequest request) {
+    public void joinGame(GameRequestDto request) {
+        System.out.println(request);
+
         String roomKey = request.getRoomKey();
-        String playerId = request.getPlayerId();
         GameSession gameSession = gameSessions.get(roomKey);
         if (gameSession != null) {
-            gameSession.addPlayer(new Player(playerId));
-            messagingTemplate.convertAndSend("/topic/gameStatus/" + roomKey,
-                    GameStatus.builder().message("Player joined: " + playerId).build());
+            gameSession.addPlayer(request.getPlayerDto());
+
+            StringBuilder builder = new StringBuilder("Players in room: ");
+            gameSession.getPlayers().forEach(player -> builder.append(player).append(" "));
+            GameStatus status = GameStatus.builder().message(builder.toString()).build();
+            messagingTemplate.convertAndSend("/topic/gameStatus/" + roomKey, status);
         } else {
             messagingTemplate.convertAndSend("/topic/error", "Game session not found: " + roomKey);
         }
 
-        // Debugging purposes
-        printTheCurrentRoomData();
+        printDebug();
     }
 
     @MessageMapping("/ready")
-    public void startGame(JoinGameRequest request) throws Exception {
+    public void startGame(GameRequestDto request) throws Exception {
         String roomKey = request.getRoomKey();
         GameSession gameSession = gameSessions.get(roomKey);
         if(gameSession != null){
-            boolean everyoneReady = gameSession.readyPlayerUp(new Player(request.getPlayerId()));
-            String message = everyoneReady ? "Everyone is ready to play!" : "Player - " + request.getPlayerId() + " is ready to begin!";
+            boolean everyoneReady = gameSession.readyPlayerUp(request.getPlayerDto());
+            String message = everyoneReady ? "Everyone is ready to play! Starting the game now..." : "Player - " + request.getPlayerDto().getName() + " is ready to begin!";
             String json = mapper.writeValueAsString(
                     GameStatus.builder()
                     .message(message)
@@ -80,9 +81,13 @@ public class GameController {
         }
     }
 
-    private void printTheCurrentRoomData() {
-        for(String roomKey : gameSessions.keySet()){
-            System.out.println("RoomKey(" + roomKey + ") has players: " + gameSessions.get(roomKey).toString());
+    public void printDebug() {
+        for(GameSession session : gameSessions.values()) {
+            if (session.getPlayers() == null) {
+                System.out.println("room key(" + session.getRoomKey() + ") has no players...");
+                continue;
+            }
+            System.out.println("game id = " + session.getRoomKey() + ", players = " + session.getPlayers());
         }
     }
 }

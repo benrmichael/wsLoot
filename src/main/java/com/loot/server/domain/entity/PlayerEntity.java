@@ -1,4 +1,4 @@
-package com.loot.server.api.domain.entity;
+package com.loot.server.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Player {
+public class PlayerEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,4 +19,7 @@ public class Player {
 
     @Column(name = "username")
     private String name;
+
+    @Column(name = "image")
+    private String image;
 }

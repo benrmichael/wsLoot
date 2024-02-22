@@ -1,7 +1,6 @@
-package com.loot.server.socket.game;
+package com.loot.server.socket.logic.cards;
 
-import com.loot.server.socket.game.cards.BaseCard;
-import com.loot.server.socket.game.cards.impl.*;
+import com.loot.server.socket.logic.cards.impl.*;
 
 import java.util.ArrayList;
 import java.util.List;

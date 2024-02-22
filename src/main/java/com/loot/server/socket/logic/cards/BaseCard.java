@@ -1,9 +1,9 @@
-package com.loot.server.socket.game.cards;
+package com.loot.server.socket.logic.cards;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.loot.server.socket.game.cards.impl.*;
+import com.loot.server.socket.logic.cards.impl.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

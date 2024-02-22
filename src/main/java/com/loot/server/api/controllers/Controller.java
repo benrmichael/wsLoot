@@ -1,7 +1,7 @@
-package com.loot.server.api;
+package com.loot.server.api.controllers;
 
-import com.loot.server.api.domain.GameCreationDto;
-import com.loot.server.api.domain.entity.Player;
+import com.loot.server.domain.GameCreationDto;
+import com.loot.server.domain.entity.PlayerEntity;
 import com.loot.server.repositories.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,15 +41,15 @@ public class Controller {
     }
 
     @PostMapping(value = "/players")
-    public ResponseEntity<?> createNewUser(@RequestBody Player player){
-        playerRepository.save(player);
+    public ResponseEntity<?> createNewUser(@RequestBody PlayerEntity playerEntity){
+        playerRepository.save(playerEntity);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/players")
-    public ResponseEntity<List<Player>> getPlayersInDb() {
-        List<Player> players = new ArrayList<>();
-        playerRepository.findAll().forEach(players::add);
-        return new ResponseEntity<>(players, HttpStatus.OK);
+    public ResponseEntity<List<PlayerEntity>> getPlayersInDb() {
+        List<PlayerEntity> playerEntities = new ArrayList<>();
+        playerRepository.findAll().forEach(playerEntities::add);
+        return new ResponseEntity<>(playerEntities, HttpStatus.OK);
     }
 }

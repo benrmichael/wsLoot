@@ -49,7 +49,7 @@ function connect(roomKey, playerId) {
 
         stompClient.publish({
             destination: "/app/createGame",
-            body: JSON.stringify({ playerId: playerId, roomKey: roomKey })
+            body: JSON.stringify({ playerDto: { name: playerId }, roomKey: roomKey })
         });
 
         initPlayerId = playerId;
@@ -87,7 +87,7 @@ function joinGame(playerId, roomKey) {
 
         stompClient.publish({
             destination: "/app/joinGame",
-            body: JSON.stringify({ playerId: playerId, roomKey: roomKey })
+            body: JSON.stringify({ playerDto: { name: playerId }, roomKey: roomKey })
         });
     };
 
@@ -99,7 +99,7 @@ function readyUp(){
     console.log("Ready button has been pressed")
     stompClient.publish({
         destination : "/app/ready",
-        body: JSON.stringify({ playerId: initPlayerId, roomKey: initRoomKey })
+        body: JSON.stringify({ playerDto: { name: initPlayerId }, roomKey: initRoomKey })
     });
 }
 

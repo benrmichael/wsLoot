@@ -1,9 +1,9 @@
-package com.loot.server.socket.game;
+package com.loot.server.socket.logic.playerhandler;
 
+import com.loot.server.domain.dto.PlayerDto;
 import com.loot.server.socket.domain.Player;
-import com.loot.server.socket.game.cards.BaseCard;
+import com.loot.server.socket.logic.cards.BaseCard;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,13 +13,13 @@ import java.util.Map;
 @AllArgsConstructor
 public class PlayerHandler implements IPlayerHandler {
 
-    private List<Player> playersInRoom;
-    private List<Player> playersInRound;
-    private List<Player> readyPlayers;
+    private List<PlayerDto> playersInRoom;
+    private List<PlayerDto> playersInRound;
+    private List<PlayerDto> readyPlayers;
     private int playerTurnIndex;
 
-    Map<Player, List<BaseCard>> playedCards;
-    Map<Player, Integer> numberOfWins;
+    Map<PlayerDto, List<BaseCard>> playedCards;
+    Map<PlayerDto, Integer> numberOfWins;
 
     private int numberOfPlayersForGame = 4;
     private int numberOfWinsNeeded = 3;
@@ -31,7 +31,7 @@ public class PlayerHandler implements IPlayerHandler {
     }
 
     @Override
-    public void addPlayer(Player player) {
+    public void addPlayer(PlayerDto player) {
         playersInRoom.add(player);
     }
 
@@ -41,8 +41,8 @@ public class PlayerHandler implements IPlayerHandler {
     }
 
     @Override
-    public Player getNextPlayer() {
-        Player player = playersInRound.get(playerTurnIndex);
+    public PlayerDto getNextPlayer() {
+        PlayerDto player = playersInRound.get(playerTurnIndex);
         if(++playerTurnIndex >= playersInRound.size()) {
             playerTurnIndex = 0;
         }
@@ -51,7 +51,7 @@ public class PlayerHandler implements IPlayerHandler {
     }
 
     @Override
-    public Boolean addWinToPlayer(Player player) {
+    public Boolean addWinToPlayer(PlayerDto player) {
         int currentNumberOfWins = numberOfWins.get(player) + 1;
         if(currentNumberOfWins == numberOfWinsNeeded) {
             return true;
@@ -62,12 +62,12 @@ public class PlayerHandler implements IPlayerHandler {
     }
 
     @Override
-    public void addPlayedCard(Player player, BaseCard card) {
+    public void addPlayedCard(PlayerDto player, BaseCard card) {
         playedCards.get(player).add(card);
     }
 
     @Override
-    public Boolean readyUp(Player player) {
+    public Boolean readyUp(PlayerDto player) {
         readyPlayers.add(player);
         if(readyPlayers.size() == numberOfPlayersForGame) {
             startNewRound();
@@ -77,7 +77,7 @@ public class PlayerHandler implements IPlayerHandler {
     }
 
     @Override
-    public void removePlayerFromRound(Player player) {
+    public void removePlayerFromRound(PlayerDto player) {
         playersInRound.remove(player);
     }
 
@@ -87,7 +87,7 @@ public class PlayerHandler implements IPlayerHandler {
         playerTurnIndex = 0;
         playedCards = new HashMap<>();
         numberOfWins = new HashMap<>();
-        for(Player readyPlayer : readyPlayers) {
+        for(PlayerDto readyPlayer : readyPlayers) {
             playedCards.put(readyPlayer, new ArrayList<>());
             numberOfWins.put(readyPlayer, 0);
         }

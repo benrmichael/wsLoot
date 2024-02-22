@@ -1,9 +1,8 @@
-package com.loot.server.socket.game.cards.impl;
+package com.loot.server.socket.logic.cards.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.loot.server.socket.game.cards.BaseCard;
+import com.loot.server.socket.logic.cards.BaseCard;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
