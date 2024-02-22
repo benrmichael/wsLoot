@@ -53,7 +53,7 @@ async function getRoomKey(playerId) {
     }
 }
 
-async function validateKey(roomKey){
+function validateKey(roomKey){
         const keyValid = await fetch('http://localhost:8080/game/validate?key='+ roomKey, {
             method: 'GET',
             headers: {
@@ -110,20 +110,15 @@ function joinGame(playerId, roomKey) {
     stompClient.onConnect = (frame) => {
         console.log('Connected: ' + frame);
         // Subscribe to game-related topics
-        if(validateKey(roomKey)){
-            stompClient.subscribe('/topic/gameStatus/' + roomKey, (gameStatus) => {
-                showGameStatus(gameStatus);
-            });
-            stompClient.publish({
-                        destination: "/app/joinGame",
-                        body: JSON.stringify({ playerId: playerId, roomKey: roomKey })
-                    });
-        } else{
-            alert("key does not exist please give a valid room key");
-            throw new Error("Key does not exist")
-        }
 
+        stompClient.subscribe('/topic/gameStatus/' + roomKey, (gameStatus) => {
+            showGameStatus(gameStatus);
+        });
 
+        stompClient.publish({
+            destination: "/app/joinGame",
+            body: JSON.stringify({ playerId: playerId, roomKey: roomKey })
+        });
     };
 
     client.setPlayerId(playerId);
